@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/background"
+    android:orientation="vertical"
+    >
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/partcard"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:contentDescription="@string/app_name"
+        />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="70dp"
+            android:id="@+id/relative"
+            >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:id="@+id/text_layout"
+                android:layout_alignParentEnd="true"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="الأسم :"
+                    android:textSize="@dimen/size_text"
+                    android:textStyle="bold"
+                    android:id="@+id/name_text"
+                    android:layout_margin="@dimen/marginleft_size"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="التليفون :"
+                    android:textSize="@dimen/size_text"
+                    android:textStyle="bold"
+                    android:layout_margin="@dimen/marginleft_size"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="رقم العضوية:"
+                    android:textSize="@dimen/size_text"
+                    android:textStyle="bold"
+                    android:layout_margin="@dimen/marginleft_size"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="مبلغ المدفوع :"
+                    android:textSize="@dimen/size_text"
+                    android:textStyle="bold"
+                    android:layout_margin="@dimen/marginleft_size"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="مبلغ المشتريات :"
+                    android:textSize="@dimen/size_text"
+                    android:textStyle="bold"
+                    android:layout_margin="@dimen/marginleft_size"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="إجمالى المتبقى:"
+                    android:textSize="@dimen/size_text"
+                    android:textStyle="bold"
+                    android:layout_margin="@dimen/marginleft_size"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="تاريخ التسجيل :"
+                    android:textSize="@dimen/size_text"
+                    android:textStyle="bold"
+                    android:layout_margin="@dimen/marginleft_size"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="تفاصيل المشتريات :"
+                    android:textSize="@dimen/size_text"
+                    android:textStyle="bold"
+                    android:layout_margin="@dimen/marginleft_size"
+                    />
+            </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_toStartOf="@id/text_layout"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:id="@+id/edit_layout"
+        >
+        <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/btext"
+                android:id="@+id/name"
+                android:inputType="text"
+                android:layout_marginTop="20dp"
+
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/btext"
+                android:id="@+id/phone"
+                android:inputType="number"
+                android:layout_marginTop="25dp"
+                android:maxLength="15"
+                />
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/btext"
+                android:id="@+id/card"
+                android:inputType="number"
+                android:layout_marginTop="23dp"
+
+
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/btext"
+                android:id="@+id/cash"
+                android:inputType="numberDecimal"
+                android:layout_marginTop="30dp"
+                android:gravity="center"
+                />
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/btext"
+                android:id="@+id/buy"
+                android:inputType="numberDecimal"
+                android:layout_marginTop="25dp"
+                android:gravity="center"
+                />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/btext"
+            android:id="@+id/total"
+            android:contentDescription="@string/app_name"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/colorPrimary"
+            android:layout_marginTop="28dp"
+            />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/calendertext"
+                android:id="@+id/date"
+                android:layout_marginTop="28dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@color/colorPrimary"
+                />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/btext"
+            android:id="@+id/buy_details"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:inputType="textMultiLine"
+            android:singleLine="false"
+            android:overScrollMode="always"
+            android:scrollbarStyle="insideInset"
+            android:scrollbars="horizontal"
+            android:maxLines="4"
+            />
+    </LinearLayout>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/edit_layout"
+                android:id="@+id/button_save"
+                android:background="@mipmap/button"
+                android:text="حفظ"
+                android:textSize="24sp"
+                android:layout_margin="@dimen/marginleft_size"
+                android:layout_centerHorizontal="true"
+                />
+
+
+
+
+
+    </RelativeLayout>
+    </ScrollView>
+</LinearLayout>

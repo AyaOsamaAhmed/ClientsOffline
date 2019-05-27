@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/back"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="انت بالفعل قمت بادخال العميل المتاح لك
+و فى انتظار مكالمه حضرتك للاشتراك          "
+        android:textSize="25sp"
+        android:textColor="@color/text"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="الاتصال على رقمى"
+        android:background="@mipmap/button"
+        android:gravity="center"
+        android:id="@+id/number"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="محادثه عن طريق الواتس أب"
+        android:background="@mipmap/button"
+        android:id="@+id/whats"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="الرجوع"
+        android:background="@mipmap/button"
+        android:id="@+id/cancle"
+        />
+</LinearLayout>

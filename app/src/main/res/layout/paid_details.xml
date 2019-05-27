@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/background"
+    android:id="@+id/main_layout"
+    >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/relative"
+
+            >
+
+
+            <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:id="@+id/home"
+    >
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/partcard"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/whatsapp"
+        />
+
+    </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_toLeftOf="@id/text_layout"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_below="@+id/home"
+                android:id="@+id/edit_layout"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/calendertext"
+                    android:id="@+id/date"
+                    android:inputType="date"
+                    android:layout_marginTop="20dp"
+                    android:maxLength="10"
+                    android:gravity="center"
+                    />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btext"
+                    android:id="@+id/buy"
+                    android:inputType="numberDecimal"
+                    android:layout_marginTop="25dp"
+                    android:maxLength="10"
+                    android:gravity="center"
+                    />
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btext"
+                    android:id="@+id/paid"
+                    android:inputType="numberDecimal"
+                    android:layout_marginTop="23dp"
+                    android:maxLength="10"
+                    android:gravity="center"
+                    />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btext"
+                    android:id="@+id/buy_details"
+                    android:layout_marginTop="30dp"
+                    android:gravity="center"
+                    android:inputType="textMultiLine"
+                    android:singleLine="false"
+                    android:overScrollMode="always"
+                    android:scrollbarStyle="insideInset"
+                    android:scrollbars="horizontal"
+                    android:maxLines="4"
+                    />
+
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:id="@+id/text_layout"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/home"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="تاريخ الدفع :"
+                    android:textSize="@dimen/size_text"
+                    android:textStyle="bold"
+                    android:id="@+id/name_text"
+                    android:layout_margin="@dimen/marginleft_size"
+                    android:textColor="@color/colorPrimary"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="مبلغ المشتريات :"
+                    android:textSize="@dimen/size_text"
+                    android:textStyle="bold"
+                    android:layout_margin="@dimen/marginleft_size"
+                    android:textColor="@color/colorPrimary"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="المبلغ المدفوع:"
+                    android:textSize="@dimen/size_text"
+                    android:textStyle="bold"
+                    android:layout_margin="@dimen/marginleft_size"
+                    android:textColor="@color/colorPrimary"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="تفاصيل المشتريات :"
+                    android:textSize="@dimen/size_text"
+                    android:textStyle="bold"
+                    android:layout_margin="@dimen/marginleft_size"
+                    android:textColor="@color/colorPrimary"
+                    />
+
+            </LinearLayout>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/button_save"
+                android:background="@mipmap/button"
+                android:text="حفظ"
+                android:textSize="24dp"
+                android:layout_margin="@dimen/marginleft_size"
+                android:layout_below="@id/edit_layout"
+                />
+
+
+    </RelativeLayout>
+
+    </ScrollView>
+
+
+
+
+</LinearLayout>

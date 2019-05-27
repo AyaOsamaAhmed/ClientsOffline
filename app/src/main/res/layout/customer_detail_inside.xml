@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/img_details"
+            android:background="@mipmap/details"
+            android:layout_weight="0.2"
+            android:gravity="center"
+
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" 100.00 ج "
+            android:textAppearance="@style/text"
+            android:padding="5dip"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:id="@+id/last_paid"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1202.00 ج"
+            android:textAppearance="@style/text"
+            android:padding="5dip"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginLeft="25dp"
+            android:id="@+id/last_buy"
+            />
+
+        <TextView
+            android:text="00"
+            android:textAppearance="@style/text"
+            android:padding="5dip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.21"
+            android:gravity="center"
+            android:id="@+id/last_date"
+            />
+    </LinearLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/line"
+        />
+
+</LinearLayout>
