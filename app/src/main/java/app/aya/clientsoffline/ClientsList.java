@@ -61,11 +61,6 @@ public class ClientsList extends Activity {
         //-------Database name
         ls_username=getIntent().getStringExtra("username");
         ls_phone = getIntent().getStringExtra("phone");
-        databasename = "Clients_" + ls_username;
-       // Toast.makeText(this, databasename, Toast.LENGTH_SHORT).show();
-        //-------Database Firebase intent.putExtra("username", ls_username);
-        databaseReference = FirebaseDatabase.getInstance().getReference(databasename);
-        databaseReference.keepSynced(true);
         //------------
         list_view.setTextFilterEnabled(true);
         list_view.setAdapter(new ListViewAdapterClients(ClientsList.this,list_dataclients ,ls_username ));
@@ -152,10 +147,7 @@ public class ClientsList extends Activity {
         Privacy = (TextView) listViewClient.findViewById(R.id.Privacy);
         tab_Privacy = (TextView) listViewClient.findViewById(R.id.tab_Privacy);
 
-        Login = (TextView)listViewClient.findViewById(R.id.login);
-        tab_login = (TextView)listViewClient.findViewById(R.id.tab_login);
-
-        add_client = (TextView) listViewClient.findViewById(R.id.add_client);
+       add_client = (TextView) listViewClient.findViewById(R.id.add_client);
         tab_add_client = (TextView) listViewClient.findViewById(R.id.tab_add_client);
 
         tab_search = (TextView)listViewClient.findViewById(R.id.tab_search);
@@ -287,32 +279,17 @@ public class ClientsList extends Activity {
     @Override
     protected void onStart() {
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                    int i = 0 ;
-                    list_dataclients.clear();
-                for(DataSnapshot dataclients : dataSnapshot.getChildren()){
-                    DataClients client  = dataclients.getValue(DataClients.class);
-                //    Toast.makeText(ClientsList.this, client.getUser_Name(), Toast.LENGTH_SHORT).show();
+             //    Toast.makeText(ClientsList.this, client.getUser_Name(), Toast.LENGTH_SHORT).show();
                     list_dataclients.add(client);
                     arrayList_data.add(client.getClient_name());
                     hashMap_position.put(client.getClient_name(),i);
-                    i++;
 
-                }
+
 
 
              //   ListViewAdapterClients adapter = new ListViewAdapterClients(ClientsList.this, list_dataclients ,ls_username );
                // list_view.setAdapter(adapter);
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
 
         super.onStart();
     }

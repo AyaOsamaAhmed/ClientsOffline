@@ -79,43 +79,13 @@
                         />
             </LinearLayout>
 
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:layout_below="@+id/two"
-                android:id="@+id/twoo"
-                >
-                <TextView
-                    android:id="@+id/login"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/login"
-                    android:textSize="@dimen/tabs"
-                    android:textColor="@color/white"
-                    android:background="@color/tabs"
-                    android:gravity="center_horizontal"
-                    android:onClick="tablogin"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/text"
-                    android:textColor="@color/colorPrimary"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/tab_login"
-                    android:id="@+id/tab_login"
-
-                    />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_below="@+id/twoo"
                 android:id="@+id/three"
                 >
                 <TextView
