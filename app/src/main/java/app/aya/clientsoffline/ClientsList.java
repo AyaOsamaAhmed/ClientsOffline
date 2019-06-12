@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
@@ -15,16 +18,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.android.volley.VolleyLog.TAG;
 
 /**
  * Created by egypt2 on 10-Dec-18.
@@ -35,16 +34,16 @@ public class ClientsList extends Activity {
     EditText search_text ;
     ListView list_view;
     Button search_button,add_button;
-    String ls_search_text ,ls_username ,databasename ,ls_phone ;
+    String ls_search_text ,ls_username  ,ls_phone ;
 
     HashMap<String, Integer> hashMap_position ;
-    DatabaseReference   databaseReference;
     List<DataClients> list_dataclients  ;
     ArrayList<String> arrayList_data   ;
 
-    TextView start, tab_start , tab_Privacy ,Privacy , Login, tab_login ,add_client , tab_add_client , tab_contact_us , tab_recordclients,tab_search;
-    private int height_start , height_Privacy , height_Login, height_add_client , height_contact_us , height_recordclients , height_search;
-
+    TextView start, tab_start , tab_Privacy ,Privacy  ,add_client , tab_add_client , tab_contact_us , tab_recordclients,tab_search;
+    private int height_start , height_Privacy , height_add_client , height_contact_us , height_recordclients , height_search;
+    ArrayList<HashMap<String,String>>           arrayList_employee;
+    HashMap<String,String>      hash_employees;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,39 +53,25 @@ public class ClientsList extends Activity {
         search_text=(EditText)findViewById(R.id.search_text);
         search_button=(Button)findViewById(R.id.search_button);
         list_view = (ListView)findViewById(R.id.clientslist);
-        list_dataclients = new ArrayList<>();
         add_button = (Button)findViewById(R.id.add_button);
+
+        hash_employees = new HashMap<String, String>();
+        arrayList_employee= new ArrayList<HashMap<String, String>>();
+        list_dataclients = new ArrayList<>();
         arrayList_data = new ArrayList<String>();
         hashMap_position = new HashMap<String, Integer>();
-        //-------Database name
-        ls_username=getIntent().getStringExtra("username");
-        ls_phone = getIntent().getStringExtra("phone");
         //------------
         list_view.setTextFilterEnabled(true);
-        list_view.setAdapter(new ListViewAdapterClients(ClientsList.this,list_dataclients ,ls_username ));
 
         search_text.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 // When user changed the Text
-
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-              /*  ArrayList<String> search = new ArrayList<String>();
-                int lenghtSearch = search_text.getText().length();
-                search.clear();
-                for (int i = 0 ; i<arrayList_data.size() ; i++){
-                    if (lenghtSearch <= arrayList_data.get(i).length()){
-                        if (search_text.getText().toString().equalsIgnoreCase((String) arrayList_data.get(i).subSequence(0,lenghtSearch) ) ){
-                             search.add(arrayList_data.get(i));
-                        }
                     }
-                }
-                list_view.setAdapter(new CustomArrayAdapter(ClientsList.this,search ,ls_username , list_dataclients));
-         */   //    ClientsList.this.filter_dataclients.getFilter().filter(charSequence.toString());
-            }
 
             @Override
             public void afterTextChanged(Editable editable) {
@@ -104,6 +89,7 @@ public class ClientsList extends Activity {
 
             }
         });
+
         search_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -119,7 +105,6 @@ public class ClientsList extends Activity {
             }
         });
 
-
         add_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -130,12 +115,20 @@ public class ClientsList extends Activity {
 
             }
         });
+        //------------
+        retrieveemployee();
 
-        //--------- Declear App
-        createDeclearLayout();
-
+        list_view.setAdapter(new ListViewAdapterClients(ClientsList.this,arrayList_employee ,ls_username ));
+      //---------floating ---------------
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //  Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                createDeclearLayout();
+            }
+        });
     }
-
 
     private void createDeclearLayout() {
         AlertDialog.Builder builder = new AlertDialog.Builder(ClientsList.this);
@@ -174,10 +167,30 @@ public class ClientsList extends Activity {
 
     }
 
+    public void retrieveemployee (){
+        int len , id = 0;
+        String  key = ""  , employee="" ;
+
+        SharedPreferences sh = getSharedPreferences("newemployee", MODE_PRIVATE);
+        len =  sh.getAll().size();
+        Log.d(TAG, "retrieveemployee: length" + len);
+        if (len!=0){
+        for( ;id < len;id++ ){
+            key = "employee_"+id;
+            employee=   sh.getString(key,"");
+
+            hash_employees.put("name"+id,employee);
+            arrayList_employee.add(hash_employees);
+        }}
+        else{
+            hash_employees.put("name0","اختبار");
+        }
+        Log.d(TAG, "retrieveemployee: "+arrayList_employee);
+    }
+
     public void setHeight(){
         getHeight("S", tab_start.getHeight());
         getHeight("P", tab_Privacy.getHeight());
-        getHeight("L",tab_login.getHeight());
         getHeight("C", tab_add_client.getHeight());
         getHeight("R", tab_recordclients.getHeight());
         getHeight("search", tab_search.getHeight());
@@ -188,7 +201,6 @@ public class ClientsList extends Activity {
     public void setHeightZero(){
         tab_start.setHeight(0);
         tab_Privacy.setHeight(0);
-        tab_login.setHeight(0);
         tab_add_client.setHeight(0);
         tab_search.setHeight(0);
         tab_recordclients.setHeight(0);
@@ -203,9 +215,6 @@ public class ClientsList extends Activity {
                     break;
                 case "P":
                     height_Privacy = height;
-                    break;
-                case "L":
-                    height_Login = height;
                     break;
                 case "C":
                     height_add_client = height;
@@ -270,109 +279,16 @@ public class ClientsList extends Activity {
         // width , height
     }
 
-    public void tablogin(View view) {
-        setHeight();
-        setHeightZero();
-        tab_login.setHeight(height_Login);
-        // width , height
-    }
-    @Override
-    protected void onStart() {
-
-             //    Toast.makeText(ClientsList.this, client.getUser_Name(), Toast.LENGTH_SHORT).show();
-                    list_dataclients.add(client);
-                    arrayList_data.add(client.getClient_name());
-                    hashMap_position.put(client.getClient_name(),i);
-
-
-
-
-             //   ListViewAdapterClients adapter = new ListViewAdapterClients(ClientsList.this, list_dataclients ,ls_username );
-               // list_view.setAdapter(adapter);
-
-
-        super.onStart();
-    }
-    private void alartTest( ) {
-        final Button button_call , button_whats , button_cancle;
-        final AlertDialog.Builder  builder = new AlertDialog.Builder(ClientsList.this);
-
-        final View listViewClient = getLayoutInflater().inflate(R.layout.layout_call,null);
-        //-----------
-        button_call = (Button) listViewClient.findViewById(R.id.number);
-        button_whats = (Button) listViewClient.findViewById(R.id.whats);
-        button_cancle= (Button) listViewClient.findViewById(R.id.cancle);
-
-        //-------------------
-        builder.setView(listViewClient);
-        final AlertDialog alertDialog = builder.create();
-
-        //------------------
-        button_call.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:01001059357"));
-                startActivity(intent);
-            }
-        });
-
-        button_whats.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("http://api.whatsapp.com/send?phone=+2001001059357"));
-                startActivity(intent);
-
-            }
-        });
-
-        button_cancle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog.cancel();
-            }
-        });
-       //--------------
-        alertDialog.show();
-        /*
-        AlertDialog.Builder al = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Material_Wallpaper));
-        al.setMessage(message);
-        al.setCancelable(false).setPositiveButton("الاتصال على رقمى", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:01001059357"));
-                startActivity(intent);
-
-            }
-        }).setCancelable(false)
-                .setPositiveButton("محادثه عن طريق الواتس أب", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse("http://api.whatsapp.com/send?phone=+2001001059357"));
-                        startActivity(intent);
-
-
-                    }
-                });
-        al.setNegativeButton("إالغاء", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-
-                dialog.cancel();
-            }
-        });
-        al.show();
-*/
-    }
-
     @Override
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Black));
 
         // builder.
-        builder.setMessage("هل انت متاكد من انك تريد الخروج من الحساب ؟").setCancelable(false).setPositiveButton("الخروج من الحساب", new DialogInterface.OnClickListener() {
+        builder.setMessage("هل انت متاكد من انك تريد الخروج من التطبيق ؟").setCancelable(false).setPositiveButton("الخروج من التطبيق", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                Intent intent = new Intent(ClientsList.this ,Login.class);
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
 
             }

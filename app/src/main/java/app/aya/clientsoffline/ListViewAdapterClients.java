@@ -2,6 +2,7 @@ package app.aya.clientsoffline;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,11 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import static com.android.volley.VolleyLog.TAG;
 
 /**
  * Created by aya on 11/1/2016.
@@ -20,26 +25,29 @@ public class ListViewAdapterClients extends BaseAdapter {
 
     Activity context;
     String ls_username ;
-    List<DataClients> list_clients ;
     Integer list_position = 0 ;
+    ArrayList<HashMap<String, String>> data;
+    HashMap<String, String> pos_username = new HashMap<String, String>();
+
+
     public ListViewAdapterClients(Activity context,
-                                  List<DataClients> list_clients, String username ) {
+                                  ArrayList<HashMap<String, String>> arraylist ,String username) {
 
         this.context = context;
         ls_username = username;
-        this.list_clients = list_clients;
-       // resultp = list_clients.get(0);
-
+        data = arraylist;
     }
 
     @Override
     public int getCount() {
-        return list_clients.size();
+        Log.d(TAG, "listview:length" + data.size());
+
+        return data.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list_clients.get(position);
+        return data.get(position);
     }
 
     @Override
@@ -62,35 +70,20 @@ public class ListViewAdapterClients extends BaseAdapter {
         Client_name = (TextView) listViewClient.findViewById(R.id.Client_name);
         button_details = (Button) listViewClient.findViewById(R.id.button_details);
 
-
-            final DataClients dataClients = list_clients.get(position);
-            //
-
-            Client_name.setText(dataClients.getClient_name());
-
-
-        // Locate the ImageView in listview_item.xml
-//        imglink = (ImageView) itemView.findViewById(R.id.image);
-
-        // Capture position and set results to the ImageView
-        // Passes flag images URL into ImageLoader.class
-       // imageLoader.DisplayImage("http://52.41.120.12:8080/Restaurant/uploadedFiles/"+resultp.get(MenuParent.IMG), imglink);
-
+        final HashMap<String, String> dataClients = data.get(position);
         //
-        //convertview.setOnClickListener(new CustomOnClickListener(callback, position));
-        //
+        ls_username = dataClients.get("name"+position);
+        pos_username.put(position+"",ls_username);
+        Client_name.setText(dataClients.get("name"+position));
+        //--------------------
         button_details.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                String name = pos_username.get(position+"");
                Intent intent = new Intent( context ,ClientsDetails.class);
-                //intent.putExtra("username",resultp.get(key));
-
-                intent.putExtra("ID",dataClients.getUser_id());
-                intent.putExtra("username",ls_username);
-                intent.putExtra("clientname",dataClients.getClient_name());
-                intent.putExtra("phone",dataClients.getUser_phone());
-                intent.putExtra("card",dataClients.getUser_card());
+                intent.putExtra("username",name);
+                intent.putExtra("position",position+"");
                 context.startActivity(intent);
             }
         });

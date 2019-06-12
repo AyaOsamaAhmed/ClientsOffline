@@ -5,7 +5,9 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
@@ -14,10 +16,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.Calendar;
+
+import static com.android.volley.VolleyLog.TAG;
 
 /**
  * Created by egypt2 on 26-Dec-18.
@@ -32,7 +33,6 @@ public class AddUser extends Activity {
     String databasename;
     DataUsers       dataUeser;
 
-    DatabaseReference databaseclients;
     DatePickerDialog datePickerDialog ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +40,7 @@ public class AddUser extends Activity {
         setContentView(R.layout.adduser);
         //-------Database Firebase
         databasename = "Users";                                                      // name clients
-        databaseclients = FirebaseDatabase.getInstance().getReference(databasename);
-        databaseclients.keepSynced(true);
-        //------------------- Declear
+         //------------------- Declear
         name = (EditText)findViewById(R.id.name);
         phone = (EditText)findViewById(R.id.phone);
         username = (EditText)findViewById(R.id.username);
@@ -79,12 +77,10 @@ public class AddUser extends Activity {
             public void onClick(View view) {
                 setData();
                 if( validation_data()){
-                    String id = databaseclients.push().getKey();
-                    ls_id = id ;
+                     ls_id = "0" ;
                     dataUeser  = new DataUsers(ls_id ,ls_username,ls_name,ls_password,ls_phone,ls_date ,ls_active);
 
-                    databaseclients.child(id).setValue(dataUeser);
-                    Toast.makeText(AddUser.this, "Saved Data Sucsses", Toast.LENGTH_SHORT).show();
+                     Toast.makeText(AddUser.this, "Saved Data Sucsses", Toast.LENGTH_SHORT).show();
                    addData();
                     Toast.makeText(AddUser.this, "you can add new User", Toast.LENGTH_SHORT).show();
 
@@ -128,6 +124,7 @@ public class AddUser extends Activity {
         ls_date =date.getText().toString();
         ls_active = active.getText().toString();
     }
+
 
     @Override
     public void onBackPressed() {

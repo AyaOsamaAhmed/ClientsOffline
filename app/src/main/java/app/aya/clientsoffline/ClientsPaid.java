@@ -16,12 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.Calendar;
 
 /**
@@ -35,11 +29,11 @@ public class ClientsPaid extends Activity {
     LinearLayout main_layout ;
     EditText buy , paid, buy_details ;
     String ls_id_client ,ls_username , databasename ,ls_clientname;
-    String ls_date ,ls_buy , ls_paid , ls_buy_details , ls_total ,ls_phone ,ls_card  , ls_old_remainded, ls_new_remainded;
+    String ls_date ,ls_buy , ls_paid , ls_buy_details , ls_total ,ls_phone ,ls_card  , ls_old_remainded, ls_new_remainded ,ls_position;
     ImageView whatsapp;
     Long old_id ;
     Double old_remainded;
-    DatabaseReference   databaseclientspaid , databaseclientremainded;
+
     DatePickerDialog datePickerDialog ;
     DataPaid        datapaid ;
     @Override
@@ -60,10 +54,12 @@ public class ClientsPaid extends Activity {
             ls_clientname = getIntent().getStringExtra("clientname");
             ls_phone = getIntent().getStringExtra("phone");
             ls_card = getIntent().getStringExtra("card");
+
             ls_buy  = getIntent().getStringExtra("buy");
             ls_paid = getIntent().getStringExtra("paid");
             ls_date = getIntent().getStringExtra("date");
             ls_buy_details = getIntent().getStringExtra("buy_details");
+
             //--------
             button_save.setVisibility(View.INVISIBLE);
             date.setEnabled(false);
@@ -80,7 +76,6 @@ public class ClientsPaid extends Activity {
         }else {
 
             //------ receive data
-            ls_id_client = getIntent().getStringExtra("clientid");
             ls_username = getIntent().getStringExtra("username");
             ls_clientname = getIntent().getStringExtra("clientname");
             ls_phone = getIntent().getStringExtra("phone");
@@ -88,10 +83,9 @@ public class ClientsPaid extends Activity {
             //--------Database Name
             databasename = "Tracks_" + ls_username;
           //  Toast.makeText(this, databasename, Toast.LENGTH_SHORT).show();
-            //-------Database Firebase
-            databaseclientspaid = FirebaseDatabase.getInstance().getReference(databasename).child(ls_id_client);
-            databaseclientspaid.keepSynced(true);
-            //----- button clicking
+
+
+            // ----- button clicking
             date.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -122,17 +116,11 @@ public class ClientsPaid extends Activity {
                         Long id = GetIDTrack();
                      //   Toast.makeText(ClientsPaid.this, id.toString(), Toast.LENGTH_SHORT).show();
                         datapaid = new DataPaid(id.toString(), ls_clientname, ls_paid, ls_buy, ls_buy_details, ls_date, ls_new_remainded);
-                        databaseclientspaid.child(id.toString()).setValue(datapaid);
 
                         Toast.makeText(ClientsPaid.this, "Saved Data Sucsses", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(ClientsPaid.this, ClientsDetails.class);
                         intent.putExtra("username", ls_username);
-                        intent.putExtra("ID", ls_id_client);
-                        intent.putExtra("clientname", ls_clientname);
-                        intent.putExtra("ID", ls_id_client);
-                        intent.putExtra("phone", ls_phone);
-                        intent.putExtra("card", ls_card);
-                        intent.putExtra("remainded", ls_new_remainded);
+                        intent.putExtra("position",ls_position);
                         startActivity(intent);
                     }
                 }
@@ -151,20 +139,9 @@ public class ClientsPaid extends Activity {
 
     @Override
     protected void onStart() {
-        if(getIntent().getBooleanExtra("details",false)){}
-        else{
-        databaseclientspaid.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                old_id = dataSnapshot.getChildrenCount();
-                databaseclientremainded = FirebaseDatabase.getInstance().getReference(databasename).child(ls_id_client).child(old_id.toString());
-                databaseclientremainded.keepSynced(true);
-                //-------
-                DataSnapshot remainded =  dataSnapshot.child(old_id.toString());
-                DataPaid  last_remainded =  remainded.getValue(DataPaid.class);
-                ls_old_remainded =  last_remainded.getRemainder();
-                old_remainded = Double.parseDouble(ls_old_remainded);
+        ls_position = getIntent().getStringExtra("position");
+        ls_old_remainded = getIntent().getStringExtra("remaind");
+        old_remainded = Double.parseDouble(ls_old_remainded);
                 //------ Alart remainded
                 AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(ClientsPaid.this, android.R.style.Theme_Holo_Light));
                 builder.setMessage("المبلغ المتبقى لهذا العميل "+ls_old_remainded).setCancelable(false).setPositiveButton("O.K", new DialogInterface.OnClickListener() {
@@ -173,16 +150,7 @@ public class ClientsPaid extends Activity {
                     }
                 });
                 builder.create().show();
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        super.onStart();
-    }
         super.onStart();
     }
 
@@ -228,11 +196,7 @@ public void onBackPressed() {
         if (getIntent().getBooleanExtra("details", false)) {
             Intent intent = new Intent(ClientsPaid.this, ClientsDetails.class);
             intent.putExtra("username", ls_username);
-            intent.putExtra("ID", ls_id_client);
-            intent.putExtra("clientname", ls_clientname);
-            intent.putExtra("ID", ls_id_client);
-            intent.putExtra("phone", ls_phone);
-            intent.putExtra("card", ls_card);
+            intent.putExtra("position",ls_position);
             startActivity(intent);
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Holo_Light));
@@ -242,11 +206,7 @@ public void onBackPressed() {
                 public void onClick(DialogInterface dialog, int id) {
                     Intent intent = new Intent(ClientsPaid.this, ClientsDetails.class);
                     intent.putExtra("username", ls_username);
-                    intent.putExtra("ID", ls_id_client);
-                    intent.putExtra("clientname", ls_clientname);
-                    intent.putExtra("ID", ls_id_client);
-                    intent.putExtra("phone", ls_phone);
-                    intent.putExtra("card", ls_card);
+                    intent.putExtra("position",ls_position);
                     startActivity(intent);
 
                 }

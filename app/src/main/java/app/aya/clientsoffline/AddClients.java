@@ -5,10 +5,12 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
@@ -16,14 +18,10 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.Calendar;
+import java.util.HashMap;
+
+import static com.android.volley.VolleyLog.TAG;
 
 /**
  * Created by egypt2 on 11-Dec-18.
@@ -34,28 +32,21 @@ public class AddClients extends Activity {
     EditText name ,phone , card ,cash ,buy ,buy_details ;
     TextView total ,date ;
     Button button_save ;
-    String ls_id ,ls_name , ls_phone , ls_card , ls_cash ="0.0" , ls_buy="0.0" , ls_total="0.0" , ls_date,ls_Remainder ;
+    String ls_name , ls_phone , ls_card , ls_cash ="0.0" , ls_buy="0.0" , ls_total="0.0" , ls_date,ls_Remainder ;
     Double ld_buy=0.0 , ld_cash=0.0 , ld_total=0.0 ;
-    String databasename;
-    DataClients         dataClients;
-    DataPaid            dataPaid    ;
-    DatabaseReference   databaseclients , databasetracks;
-    DatabaseReference   databaseReference;
+    String ls_username , ls_user_tracks;
     DatePickerDialog datePickerDialog ;
-      String ls_username ,ls_phone_test  ,ls_buy_details;
-    int                     client_test;
+    String ls_name_login ,ls_phone_test  ,ls_buy_details;
+    HashMap<String,String> track = new HashMap<String, String>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.addclients);
-        //-------Database Firebase
-        ls_username=getIntent().getStringExtra("username");
+
+        //-------Database  local by SharedPreferences
+        ls_name_login=getIntent().getStringExtra("name");
         ls_phone_test   =getIntent().getStringExtra("phone");
-        databasename = "Clients_" + ls_username;
-       // Toast.makeText(this, databasename, Toast.LENGTH_SHORT).show();
-        // name clients
-        databaseclients = FirebaseDatabase.getInstance().getReference(databasename);
-        databaseclients.keepSynced(true);
         //------------------- Declear
         name = (EditText)findViewById(R.id.name);
         phone = (EditText)findViewById(R.id.phone);
@@ -68,15 +59,6 @@ public class AddClients extends Activity {
         buy_details=(EditText)findViewById(R.id.buy_details);
         //--------- Set Data
         setData();
-        /*----------- Test Client
-        if (ls_username.equals("test")) {
-            phone.setText(ls_phone_test);
-            phone.setEnabled(false);
-            buy_details.setText("تحت الاختبار");
-            buy_details.setEnabled(false);
-        }
-        */
-
         //------ Calc Total
         buy.addTextChangedListener(new TextWatcher() {
             @Override
@@ -128,25 +110,14 @@ public class AddClients extends Activity {
             public void onClick(View view) {
         setData();
        if( validation_data() ){
-        String id = databaseclients.push().getKey();
-        ls_id = id ;
-        dataClients  = new DataClients(ls_id ,ls_name,ls_card,ls_phone,ls_cash,ls_buy,ls_date,ls_Remainder);
-        databaseclients.child(id).setValue(dataClients);
-        Toast.makeText(AddClients.this, "Saved Data Sucsses", Toast.LENGTH_SHORT).show();
-        //----- Tracks Database
-           String Track_id ="1";
-           String databasename_Tracks = "Tracks_" + ls_username;
 
-           databasetracks = FirebaseDatabase.getInstance().getReference(databasename_Tracks).child(ls_id);
-            databasetracks.keepSynced(true);
-           dataPaid  = new DataPaid(Track_id ,ls_name,ls_cash,ls_buy,ls_buy_details,ls_date,ls_Remainder);
-           databasetracks.child(Track_id).setValue(dataPaid);
+        saveData();
 
        //------ go next page
        Intent intent = new Intent(AddClients.this,ClientsList.class);
-       intent.putExtra("username", ls_username);
-           intent.putExtra("phone", ls_phone);
-       startActivity(intent);
+       intent.putExtra("name", ls_name_login);
+
+           startActivity(intent);
             }
 
             }
@@ -155,88 +126,51 @@ public class AddClients extends Activity {
 
     }
 
-    @Override
-    protected void onStart() {
-     String databasename = "Clients_" + ls_username;
-        // Toast.makeText(this, databasename, Toast.LENGTH_SHORT).show();
-        //-------Database Firebase intent.putExtra("username", ls_username);
-        databaseReference = FirebaseDatabase.getInstance().getReference(databasename);
-        databaseReference.keepSynced(true);
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+    public void createNewEmployee (){
+        String  id_employee ;
+        int id = 1 ;
+        SharedPreferences sh = getSharedPreferences("newemployee", MODE_PRIVATE);
 
-                for(DataSnapshot dataclients : dataSnapshot.getChildren()){
-                    DataClients client  = dataclients.getValue(DataClients.class);
-                    //    Toast.makeText(ClientsList.this, client.getUser_Name(), Toast.LENGTH_SHORT).show();
-
-                }
-
-
-                }
-                //   ListViewAdapterClients adapter = new ListViewAdapterClients(ClientsList.this, list_dataclients ,ls_username );
-                // list_view.setAdapter(adapter);
-
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        super.onStart();
+        id = sh.getAll().size();
+        id_employee = "employee_"+id;
+        ls_username = id + name.getText().toString();
+        SharedPreferences.Editor edit = sh.edit();
+        edit.putString("username",ls_username);
+        edit.putString(id_employee,name.getText().toString());
+        edit.apply();
+        Log.d(TAG, "createNewEmployee: "+sh.getAll());
     }
-    private void alartTest(String message) {
+    public void saveData (){
+       //------- create employee
+        createNewEmployee();
+        //------ create employee details
+        SharedPreferences sh = getSharedPreferences(ls_username, MODE_PRIVATE);
 
-        AlertDialog.Builder al = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Material_Wallpaper));
-            al.setMessage(message);
-        al.setCancelable(false).setPositiveButton("الاتصال على رقمى", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent intent = new Intent(Intent.ACTION_DIAL);
-                    intent.setData(Uri.parse("tel:01001059357"));
-                    startActivity(intent);
+        SharedPreferences.Editor edit = sh.edit();
+        edit.putString("username",ls_username);
+        edit.putString("name",name.getText().toString());
+        edit.putString("phone",phone.getText().toString());
+        edit.putString("card",card.getText().toString());
+        edit.putString("Date",date.getText().toString());
+        edit.putString("remainded",ls_total);
 
-                }
-            }).setCancelable(false)
-        .setPositiveButton("محادثه عن طريق الواتس أب", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse("http://api.whatsapp.com/send?phone=+2001001059357"));
-                    startActivity(intent);
+        edit.apply();
 
+        //----Tracking
+        track.put("cash",cash.getText().toString());
+        track.put("buy",buy.getText().toString());
+        track.put("date",date.getText().toString());
+        track.put("buy_details",buy_details.getText().toString());
+        ls_user_tracks = ls_username+"_tracks";
+        SharedPreferences sh_track = getSharedPreferences(ls_user_tracks, MODE_PRIVATE);
+        SharedPreferences.Editor edit_track = sh_track.edit();
 
-                }
-            });
-        al.setNegativeButton("الرجوع", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent intent = new Intent(AddClients.this ,ClientsList.class);
-                    intent.putExtra("username", ls_username);
-                    startActivity(intent);
-                    dialog.cancel();
-                }
-            });
-            al.show();
+        edit_track.putString("track0", track.toString());
 
-    }
+        edit_track.apply();
+        //------ complete
+        Toast.makeText(this,"saved",Toast.LENGTH_LONG).show();
 
-    public void alart(String message ) {
-        AlertDialog al = new AlertDialog.Builder(this).create();
-        al.setMessage(message);
-        al.setButton("الاتصال على رقمى", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-        al.setButton2("MOBILEDATA", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                AddClients.this.startActivity(new Intent("android.settings.DATA_ROAMING_SETTINGS"));
-            }
-        });
-        al.setButton3("WIFI", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                AddClients.this.startActivity(new Intent("android.settings.WIFI_SETTINGS"));
-            }
-        });
-        al.show();
     }
 
     private Boolean validation_data() {
@@ -299,7 +233,7 @@ public class AddClients extends Activity {
         builder.setMessage("هل انت متاكد من إلغاء انشاء عميل جديد؟").setCancelable(false).setPositiveButton("نعم", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Intent intent = new Intent(AddClients.this ,ClientsList.class);
-                intent.putExtra("username", ls_username);
+                intent.putExtra("name", ls_name_login);
                 startActivity(intent);
 
             }

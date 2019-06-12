@@ -3,8 +3,10 @@ package app.aya.clientsoffline;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,14 +15,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import static com.android.volley.VolleyLog.TAG;
 
 /**
  * Created by egypt2 on 18-Dec-18.
@@ -30,16 +29,14 @@ public class ClientsDetails extends Activity {
 
 
     TextView new_paid  , last_date ,cost_paid , whatsapp , client_name , client_card;
-    String ls_id ,ls_username ,ls_clientname ;
-    private String ls_phone;
-    private String ls_card;
-
-    DatabaseReference databaseReference  , databaseclientremainded;
+    String  ls_username ,ls_clientname ,ls_position ,ls_last_date;
+    private String ls_phone ,ls_card;
     List<DataPaid> list_dataclients ;
-    private String databasename;
-    private String ls_id_client ,ls_last_date;
     ListView list_view;
-    private String ls_remainded;
+    private String ls_remainded ,ls_result;
+    HashMap<String,String> hash_client_track;
+    ArrayList<HashMap<String,String>> arrayList_employee_track;
+
      @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,35 +50,25 @@ public class ClientsDetails extends Activity {
         whatsapp = (TextView) findViewById(R.id.whatsapp);
         client_card =(TextView)findViewById(R.id.card);
         list_dataclients = new ArrayList<>();
+
+        hash_client_track = new HashMap<String, String>();
+        arrayList_employee_track = new ArrayList<HashMap<String, String>>();
         //--------
-        ls_id_client=getIntent().getStringExtra("ID");
-        ls_clientname=getIntent().getStringExtra("clientname");
-        ls_username=getIntent().getStringExtra("username");
-        ls_phone=getIntent().getStringExtra("phone");
-        ls_card = getIntent().getStringExtra("card");
-        ls_last_date = getIntent().getStringExtra("Date");
-        ls_remainded = getIntent().getStringExtra("remainded");
-      //  Toast.makeText(this, ls_phone, Toast.LENGTH_SHORT).show();
-        //-------------
+         ls_username =getIntent().getStringExtra("username");
+         ls_position = getIntent().getStringExtra("position");
+         retriveData(ls_position+ls_username);
+         //-------------
         client_name.setText(ls_clientname);
         whatsapp.setText(ls_phone);
         client_card.setText(ls_card);
-        //-------Database name
-        databasename = "Tracks_" + ls_username;
-       // Toast.makeText(this, databasename, Toast.LENGTH_SHORT).show();
-        //-------Database Firebase
-        databaseReference = FirebaseDatabase.getInstance().getReference(databasename).child(ls_id_client);
-        databaseReference.keepSynced(true);
+        last_date.setText(ls_last_date);
+        cost_paid.setText(ls_remainded);
         //---------
         new_paid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                     Intent intent = new Intent(getApplicationContext(), ClientsPaid.class);
                     intent.putExtra("username", ls_username);
-                    intent.putExtra("clientname", ls_clientname);
-                    intent.putExtra("phone", ls_phone);
-                    intent.putExtra("card", ls_card);
-                    intent.putExtra("clientid", ls_id_client);
                     startActivity(intent);
             }
         });
@@ -99,77 +86,41 @@ public class ClientsDetails extends Activity {
         });
     }
 
-    private void alartTest( ) {
-        final Button button_call , button_whats , button_cancle;
-        final AlertDialog.Builder  builder = new AlertDialog.Builder(ClientsDetails.this);
+    private void retriveData(String ls_username) {
 
-        final View listViewClient = getLayoutInflater().inflate(R.layout.layout_call,null);
-        //-----------
-        button_call = (Button) listViewClient.findViewById(R.id.number);
-        button_whats = (Button) listViewClient.findViewById(R.id.whats);
-        button_cancle= (Button) listViewClient.findViewById(R.id.cancle);
+        SharedPreferences sh = getSharedPreferences(ls_username, MODE_PRIVATE);
 
-        //-------------------
-        builder.setView(listViewClient);
-        final AlertDialog alertDialog = builder.create();
+         ls_clientname=sh.getString("name","");
+         ls_phone= sh.getString("phone","");
+        ls_card = sh.getString("card","");
+        ls_last_date = sh.getString("Date","");
+        ls_remainded = sh.getString("remainded","");
+        //----Tracking
+        SharedPreferences sh_track = getSharedPreferences(ls_username+"_tracks", MODE_PRIVATE);
 
-        //------------------
-        button_call.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:01001059357"));
-                startActivity(intent);
-            }
-        });
+       int  len =  sh_track.getAll().size();
+        Log.d(TAG, "retrieveemployee: length" + len);
+        if (len!=0){
+            for(int i = 0 ;i < len;i++ ){
+              ls_result = sh_track.getString("track"+i,"");
+              //  {buy_details=مشتريات, buy=6805, cash=6009, date=12/6/2019}
+                String[] pairs = ls_result.split(",");
 
-        button_whats.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("http://api.whatsapp.com/send?phone=+2001001059357"));
-                startActivity(intent);
+                for (int ii=0;ii<pairs.length;ii++) {
+                    String pair = pairs[ii];
+                    pair = pair.replace("}","");
+                    String[] keyValue = pair.split("=");
+                    hash_client_track.put(keyValue[0],keyValue[1]);
+                }
 
-            }
-        });
-
-        button_cancle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog.cancel();
-            }
-        });
-        //--------------
-        alertDialog.show();
-        /*
-        AlertDialog.Builder al = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Material_Wallpaper));
-        al.setMessage(message);
-        al.setCancelable(false).setPositiveButton("الاتصال على رقمى", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:01001059357"));
-                startActivity(intent);
-
-            }
-        }).setCancelable(false)
-                .setPositiveButton("محادثه عن طريق الواتس أب", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse("http://api.whatsapp.com/send?phone=+2001001059357"));
-                        startActivity(intent);
+                arrayList_employee_track.add(hash_client_track);
+            }}
+        //------ complete
+        list_view.setAdapter(new ListViewAdapterClientTracks(ClientsDetails.this,arrayList_employee_track ,ls_username ,ls_position,ls_phone ,ls_card ,ls_remainded));
 
 
-                    }
-                });
-        al.setNegativeButton("إالغاء", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-
-                dialog.cancel();
-            }
-        });
-        al.show();
-*/
     }
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -190,68 +141,12 @@ public class ClientsDetails extends Activity {
 
     }
 
-    @Override
-    protected void onStart() {
-
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                list_dataclients.clear();
-                for(DataSnapshot datapaid : dataSnapshot.getChildren()){
-                    DataPaid client  = datapaid.getValue(DataPaid.class);
-                    //    Toast.makeText(ClientsList.this, client.getUser_Name(), Toast.LENGTH_SHORT).show();
-                    list_dataclients.add(client);
-
-                }
-                ListViewAdapterClientTracks adapter = new ListViewAdapterClientTracks(ClientsDetails.this, list_dataclients ,ls_username ,ls_id_client , ls_phone , ls_card);
-                list_view.setAdapter(adapter);
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        databaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Long old_id;
-                    String ls_old_remainded;
-                    old_id = dataSnapshot.getChildrenCount();
-                    databaseclientremainded = FirebaseDatabase.getInstance().getReference(databasename).child(ls_id_client).child(old_id.toString());
-                    databaseclientremainded.keepSynced(true);
-                    //------
-                    DataSnapshot remainded =  dataSnapshot.child(old_id.toString());
-                    DataPaid  last_remainded =  remainded.getValue(DataPaid.class);
-                    ls_remainded =  last_remainded.getRemainder();
-                    ls_last_date = last_remainded.getUser_date();
-                    //----- Set last_date
-                    last_date.setText(ls_last_date);
-                    cost_paid.setText(ls_remainded);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-        super.onStart();
-    }
-
-
 
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(ClientsDetails.this ,ClientsList.class);
         intent.putExtra("username", ls_username);
-        intent.putExtra("ID", ls_id_client);
-        intent.putExtra("clientname", ls_clientname);
-        intent.putExtra("ID", ls_id_client);
-        intent.putExtra("phone", ls_phone);
-        intent.putExtra("card", ls_card);
+
         startActivity(intent);
 
 
