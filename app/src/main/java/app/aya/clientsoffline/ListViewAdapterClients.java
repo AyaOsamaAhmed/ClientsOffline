@@ -81,8 +81,9 @@ public class ListViewAdapterClients extends BaseAdapter {
             public void onClick(View view) {
 
                 String name = pos_username.get(position+"");
-               Intent intent = new Intent( context ,ClientsDetails.class);
-                intent.putExtra("username",name);
+                Intent intent = new Intent( context ,ClientsDetails.class);
+                intent.putExtra("name",name);
+                intent.putExtra("username",position+name);
                 intent.putExtra("position",position+"");
                 context.startActivity(intent);
             }

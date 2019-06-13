@@ -153,6 +153,7 @@ public class AddClients extends Activity {
         edit.putString("card",card.getText().toString());
         edit.putString("Date",date.getText().toString());
         edit.putString("remainded",ls_total);
+        edit.putString("id","0");
 
         edit.apply();
 
@@ -244,4 +245,5 @@ public class AddClients extends Activity {
         });
         builder.create().show();
     }
+
 }

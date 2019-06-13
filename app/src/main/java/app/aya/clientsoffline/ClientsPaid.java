@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 /**
  * Created by egypt2 on 18-Dec-18.
@@ -28,14 +30,14 @@ public class ClientsPaid extends Activity {
     TextView date ;
     LinearLayout main_layout ;
     EditText buy , paid, buy_details ;
-    String ls_id_client ,ls_username , databasename ,ls_clientname;
+    String ls_id_client ,ls_username , ls_user_tracks ,ls_clientname ,ls_old_id;
     String ls_date ,ls_buy , ls_paid , ls_buy_details , ls_total ,ls_phone ,ls_card  , ls_old_remainded, ls_new_remainded ,ls_position;
     ImageView whatsapp;
     Long old_id ;
     Double old_remainded;
 
     DatePickerDialog datePickerDialog ;
-    DataPaid        datapaid ;
+    HashMap<String,String>  track = new HashMap<String, String>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,15 +79,11 @@ public class ClientsPaid extends Activity {
 
             //------ receive data
             ls_username = getIntent().getStringExtra("username");
-            ls_clientname = getIntent().getStringExtra("clientname");
             ls_phone = getIntent().getStringExtra("phone");
             ls_card = getIntent().getStringExtra("card");
-            //--------Database Name
-            databasename = "Tracks_" + ls_username;
-          //  Toast.makeText(this, databasename, Toast.LENGTH_SHORT).show();
+            ls_old_id =  getIntent().getStringExtra("id");
 
-
-            // ----- button clicking
+              // ----- button clicking
             date.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -114,9 +112,7 @@ public class ClientsPaid extends Activity {
                     if (validation_data() ) {
                         CalcTotal();
                         Long id = GetIDTrack();
-                     //   Toast.makeText(ClientsPaid.this, id.toString(), Toast.LENGTH_SHORT).show();
-                        datapaid = new DataPaid(id.toString(), ls_clientname, ls_paid, ls_buy, ls_buy_details, ls_date, ls_new_remainded);
-
+                        saveRetrive();
                         Toast.makeText(ClientsPaid.this, "Saved Data Sucsses", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(ClientsPaid.this, ClientsDetails.class);
                         intent.putExtra("username", ls_username);
@@ -128,11 +124,45 @@ public class ClientsPaid extends Activity {
 
             });
         }
+
+        //---------------
+    }
+
+    private void saveRetrive() {
+
+        //----Tracking
+        track.put("cash",ls_paid);
+        track.put("buy",ls_buy);
+        track.put("date",ls_date);
+        track.put("buy_details",ls_buy_details);
+        ls_user_tracks = ls_username+"_tracks";
+        //----- update id
+        GetIDTrack();
+        //-------- save track
+        SharedPreferences sh_track = getSharedPreferences(ls_user_tracks, MODE_PRIVATE);
+        SharedPreferences.Editor edit_track = sh_track.edit();
+
+        edit_track.putString("track"+old_id, track.toString());
+
+        edit_track.apply();
+
+
+        //------ complete
+        Toast.makeText(this,"saved",Toast.LENGTH_LONG).show();
+
     }
 
     private Long GetIDTrack() {
         Long ls_new_id ;
+        if(ls_old_id.equals("")){ls_old_id = "0";}
+            old_id = Long.parseLong(ls_old_id) ;
             ls_new_id= old_id + 1 ;
+
+        SharedPreferences sh = getSharedPreferences(ls_username, MODE_PRIVATE);
+
+        SharedPreferences.Editor edit = sh.edit();
+        edit.putString("id",ls_new_id.toString());
+        edit.commit();
         return ls_new_id ;
     }
 
@@ -153,7 +183,6 @@ public class ClientsPaid extends Activity {
 
         super.onStart();
     }
-
 
     private Boolean validation_data() {
         if (ls_buy_details.isEmpty()) {

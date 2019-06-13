@@ -29,11 +29,11 @@ public class ClientsDetails extends Activity {
 
 
     TextView new_paid  , last_date ,cost_paid , whatsapp , client_name , client_card;
-    String  ls_username ,ls_clientname ,ls_position ,ls_last_date;
+    String  ls_username ,ls_clientname ,ls_position ,ls_last_date , ls_id;
     private String ls_phone ,ls_card;
     List<DataPaid> list_dataclients ;
     ListView list_view;
-    private String ls_remainded ,ls_result;
+    private String ls_remainded ,ls_result ,ls_name;
     HashMap<String,String> hash_client_track;
     ArrayList<HashMap<String,String>> arrayList_employee_track;
 
@@ -54,9 +54,10 @@ public class ClientsDetails extends Activity {
         hash_client_track = new HashMap<String, String>();
         arrayList_employee_track = new ArrayList<HashMap<String, String>>();
         //--------
+         ls_name =getIntent().getStringExtra("name");
          ls_username =getIntent().getStringExtra("username");
          ls_position = getIntent().getStringExtra("position");
-         retriveData(ls_position+ls_username);
+         retriveData(ls_username);
          //-------------
         client_name.setText(ls_clientname);
         whatsapp.setText(ls_phone);
@@ -67,9 +68,14 @@ public class ClientsDetails extends Activity {
         new_paid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    Intent intent = new Intent(getApplicationContext(), ClientsPaid.class);
-                    intent.putExtra("username", ls_username);
-                    startActivity(intent);
+                Intent intent = new Intent(getApplicationContext(), ClientsPaid.class);
+                intent.putExtra("username", ls_username);
+                intent.putExtra("phone",ls_phone);
+                intent.putExtra("card",ls_card);
+                intent.putExtra("remaind",ls_remainded);
+                intent.putExtra("id",ls_id);
+
+                startActivity(intent);
             }
         });
 
@@ -95,6 +101,7 @@ public class ClientsDetails extends Activity {
         ls_card = sh.getString("card","");
         ls_last_date = sh.getString("Date","");
         ls_remainded = sh.getString("remainded","");
+        ls_id = sh.getString("id","");
         //----Tracking
         SharedPreferences sh_track = getSharedPreferences(ls_username+"_tracks", MODE_PRIVATE);
 
@@ -105,7 +112,7 @@ public class ClientsDetails extends Activity {
               ls_result = sh_track.getString("track"+i,"");
               //  {buy_details=مشتريات, buy=6805, cash=6009, date=12/6/2019}
                 String[] pairs = ls_result.split(",");
-
+              if(pairs.length == 4){
                 for (int ii=0;ii<pairs.length;ii++) {
                     String pair = pairs[ii];
                     pair = pair.replace("}","");
@@ -114,7 +121,7 @@ public class ClientsDetails extends Activity {
                 }
 
                 arrayList_employee_track.add(hash_client_track);
-            }}
+            }}}
         //------ complete
         list_view.setAdapter(new ListViewAdapterClientTracks(ClientsDetails.this,arrayList_employee_track ,ls_username ,ls_position,ls_phone ,ls_card ,ls_remainded));
 
@@ -145,7 +152,7 @@ public class ClientsDetails extends Activity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(ClientsDetails.this ,ClientsList.class);
-        intent.putExtra("username", ls_username);
+        intent.putExtra("username", ls_name);
 
         startActivity(intent);
 
